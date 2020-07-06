@@ -124,7 +124,7 @@ REPLACE="
 print_modname() {
   ui_print "*********************************************"
   ui_print "     strace for Android                          "
-  ui_print "         - v 5.6                           "
+  ui_print "         - v 5.7                           "
   ui_print "         - built by nelshh @ xda-developers  "
   ui_print "*********************************************"
 }

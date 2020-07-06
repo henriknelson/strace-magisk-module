@@ -33,7 +33,7 @@
 .  el \
 .    BR "\\$1"
 ..
-.TH STRACE 1 "2020-04-06" "strace 5.6"
+.TH STRACE 1 "2020-04-24" "strace 5.7"
 .SH NAME
 strace \- trace system calls and signals
 .SH SYNOPSIS
@@ -157,9 +157,9 @@ This example shows the shell performing ">>xyzzy" output redirection:
 .CW
 open("xyzzy", O_WRONLY|O_APPEND|O_CREAT, 0666) = 3
 .CE
-Here, the third argument of
+Here, the second and the third argument of
 .BR open (2)
-is decoded by breaking down the
+are decoded by breaking down the
 flag argument into its three bitwise-OR constituents and printing the
 mode value in octal by tradition.  Where the traditional or native
 usage differs from ANSI or POSIX, the latter forms are preferred.
@@ -599,6 +599,9 @@ Trace syscalls related to file system statistics (statfs-like, fstatfs-like,
 and ustat).  The same effect can be achieved with
 .BR "\-e\ trace" = /statv?fs|fsstat|ustat
 regular expression.
+.TP
+.BR %clock
+Trace system calls that read or modify system clocks.
 .TP
 .BR %pure
 Trace syscalls that always succeed and have no arguments.
@@ -1262,15 +1265,37 @@ Unless a :\fBwhen\fR=\,\fIexpr\fR subexpression is specified,
 an injection is being made into every invocation of each syscall from the
 .IR set .
 .IP
-The format of the subexpression is one of the following:
+The format of the subexpression is:
+.RS 15
+.IP
+\fIfirst\/\fR[\fB..\fR\,\fIlast\/\fR][\fB+\fR[\,\fIstep\/\fR]]
+.RE
+.IP
+Number
+.I first
+stands for the first invocation number in the range, number
+.I last
+stands for the last invocation number in the range, and
+.I step
+stands for the step between two consecutive invocations.
+The following combinations are useful:
 .RS
-.TP 12
+.TP 18
 .I first
 For every syscall from the
 .IR set ,
 perform an injection for the syscall invocation number
 .I first
 only.
+.TQ
+\fIfirst\/\fB..\fR\,\fIlast\fR
+For every syscall from the
+.IR set ,
+perform an injection for the syscall invocation number
+.I first
+and all subsequent invocations until the invocation number
+.I last
+(inclusive).
 .TQ
 \fIfirst\/\fB+\fR
 For every syscall from the
@@ -1279,7 +1304,16 @@ perform injections for the syscall invocation number
 .I first
 and all subsequent invocations.
 .TQ
-\fIfirst\/\fB+\fIstep\fR
+\fIfirst\/\fB..\fR\,\fIlast\/\fB+\fR
+For every syscall from the
+.IR set ,
+perform injections for the syscall invocation number
+.I first
+and all subsequent invocations until the invocation number
+.I last
+(inclusive).
+.TQ
+\fIfirst\/\fB+\fR\,\fIstep\fR
 For every syscall from the
 .IR set ,
 perform injections for syscall invocations number
@@ -1287,6 +1321,11 @@ perform injections for syscall invocations number
 .IR first + step ,
 .IR first + step + step ,
 and so on.
+.TQ
+\fIfirst\/\fB..\fR\,\fIlast\fB+\fR\,\fIstep\fR
+Same as the previous, but consider only syscall invocations with numbers up to
+.I last
+(inclusive).
 .RE
 .IP
 For example, to fail each third and subsequent chdir syscalls with
@@ -1298,7 +1337,9 @@ The valid range for numbers
 .I first
 and
 .I step
-is 1..65535.
+is 1..65535, and for number
+.I last
+is 1..65534.
 .IP
 An injection expression can contain only one
 .BR error =
