@@ -33,7 +33,7 @@
 .  el \
 .    BR "\\$1"
 ..
-.TH STRACE 1 "2020-06-16" "strace 5.8"
+.TH STRACE 1 "2020-09-23" "strace 5.9"
 .SH NAME
 strace \- trace system calls and signals
 .SH SYNOPSIS
@@ -871,6 +871,11 @@ or higher.
 .TQ
 .B \-\-instruction\-pointer
 Print the instruction pointer at the time of the system call.
+.TP
+.B \-n
+.TQ
+.B \-\-syscall\-number
+Print the syscall number.
 .if ''#' .TP
 .if ''#' .B \-k
 .if ''#' .TQ
@@ -1075,6 +1080,10 @@ Print all available information associated with file descritors:
 protocol-specific information associated with socket file descriptors,
 block/character device number associated with device file descriptors,
 and PIDs asociated with pidfd file descriptors.
+.TP
+.B \-\-pidns\-translation
+If strace and tracee are in different PID namespaces, print PIDs in
+strace's namespace, too.
 .SS Statistics
 .TP 12
 .B \-c
@@ -1648,7 +1657,9 @@ effective user
 .SM ID
 privileges while being traced.
 .LP
-A traced process runs slowly.
+A traced process runs slowly (but check out the
+.B \-\-seccomp\-bpf
+option).
 .LP
 Traced processes which are descended from
 .I command
