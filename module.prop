@@ -1,6 +1,6 @@
 id=strace-nelshh
 nname=strace for Android
-version=v5.9
-versionCode=4
+version=v5.11
+versionCode=5
 author=nelshh
 description=A statically built version of the strace tool for android (aarch64)

@@ -6,6 +6,9 @@ This Magisk module installs the latest stable version of the strace tool to the 
 
 ## Change Log
 
+### v1.2 - 2021-03-04
+* Updated strace to v5.11
+
 ### v1.1 - 2020-10-17
 * Updated strace to v5.9
 
