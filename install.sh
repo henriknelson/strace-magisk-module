@@ -131,22 +131,52 @@ print_modname() {
 
 # Copy/extract your module files into $MODPATH in on_install.
 on_install() {
-  ui_print "[1/5] Extracting files..";
+  ui_print "[1/7] Extracting files..";
   unzip -o "$ZIPFILE" '*' -d $MODPATH >&2;
-  ui_print "[2/5] Setting permissions..";
+  ui_print "[2/7] Setting permissions..";
 }
 
 set_permissions() {
   # The following is the default rule, DO NOT remove
   set_perm_recursive $MODPATH 0 0 0755 0644;
 
-  ui_print "[3/5] Installing to /system/bin..";
+  ui_print "[3/7] Installing to /system/bin..";
   chown -R 0:0 $MODPATH/system/bin;
   chmod -R 755 $MODPATH/system/bin;
+  find $MODPATH/system/bin -type d -exec chmod 755 {} +;
   find $MODPATH/system/bin -type f -exec chmod 755 {} +;
   find $MODPATH/system/bin -type l -exec chmod 755 {} +;
 
-  ui_print "[4/5] Installing to /data/man..";
+  ui_print "[4/7] Installing to /system/bin/rawst..";
+  chown -R 0:0 $MODPATH/system/bin/rawst;
+  chmod -R 755 $MODPATH/system/bin/rawst;
+  find $MODPATH/system/bin/rawst -type f -exec chmod 755 {} +;
+  find $MODPATH/system/bin/rawst -type l -exec chmod 755 {} +;
+
+  ui_print "[5/7] Installing to /system/bin/rawlibst..";
+  chown -R 0:0 $MODPATH/system/bin/rawlibst;
+  chmod -R 755 $MODPATH/system/bin/rawlibst;
+  olddir=$(pwd);
+  cd $MODPATH/system/bin/rawlibst;
+
+  ln -s libzstd.so.1.4.8 libzstd.so.1
+  ln -s libzstd.so.1.4.8 libzstd.so
+
+  ln -s libelf-0.182.so libelf.so.1
+  ln -s libelf.so.1 libelf.so
+
+  ln -s libdw-0.182.so libdw.so.1
+  ln -s libdw.so.1 libdw.so
+
+  ln -s libbz2.so.1.0.8 libbz2.so.1.0
+  ln -s libbz2.so.1.0.8 libbz2.so
+
+  cd "$oldddir";
+  find $MODPATH/system/bin/rawlibst -type d -exec chmod 755 {} \+;
+  find $MODPATH/system/bin/rawlibst -type f -exec chmod 755 {} \+;
+  find $MODPATH/system/bin/rawlibst -type l -exec chmod 755 {} \+;
+
+  ui_print "[6/7] Installing to /data/man..";
   mkdir -p /data/man;
   cp -r $MODPATH/custom/man/* /data/man/;
   chmod -R 664 /data/man;
@@ -157,5 +187,5 @@ set_permissions() {
      makewhatis /data/man;
   fi
 
-  ui_print "[5/5] Installation finished";
+  ui_print "[7/7] Installation finished";
 }
